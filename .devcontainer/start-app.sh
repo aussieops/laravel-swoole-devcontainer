@@ -3,10 +3,6 @@
 # Laravel Swoole Container Startup Script
 # This script prepares the Laravel application and starts all services
 
-set -e
-
-echo "🚀 Starting Laravel Swoole Application..."
-
 # Change to application directory
 cd /var/www/html
 
@@ -25,20 +21,15 @@ until php -r "try { new PDO('pgsql:host=postgres;dbname=${DB_DATABASE:-laravel}'
 done
 echo "✅ Database service is up"
 
-# Run Laravel setup commands
-echo "🔧 Setting up Laravel application..."
+if [ ! -d "vendor" ]; then
+    composer install --no-interaction --no-progress --prefer-dist
+fi
 
-# Skip cache clearing and dependency installation to reduce memory usage
-echo "📦 Using PHP dependencies installed during build..."
-
-# Skip key generation as it's already handled in the Dockerfile
-echo "🔑 Using application key generated during build..."
-
-# Skip automatic migrations to reduce memory usage and give developers control
-echo "⏭️  Skipping migrations - developers should run 'php artisan migrate' manually when needed"
-
-# Skip optimization commands to reduce memory usage
-echo "⚡ Skipping optimization to conserve memory..."
+# Generate key if not already set
+if [ ! -f ".env" ]; then
+    cp .env.example .env
+    php artisan key:generate
+fi
 
 # Create storage link if it doesn't exist
 if [ ! -L "public/storage" ]; then
@@ -52,12 +43,7 @@ chown -R www-data:www-data /var/www/html
 chmod -R 755 storage bootstrap/cache
 chmod -R 775 storage/logs
 
-# Start supervisor to manage all services
-echo "🎯 Starting services with Supervisor..."
-echo "   - Laravel Octane (Swoole) on port 8000"
-echo "   - Queue Workers"
-echo "   - WebSocket Server (Reverb) on port 8080"
-echo "   - Task Scheduler"
+php artisan queue:restart
 
 # Start supervisord with the configuration
-exec /usr/bin/supervisord -c /etc/supervisord.conf
+exec /usr/bin/supervisord -n -c /etc/supervisord.conf

@@ -1,8 +1,5 @@
 FROM phpswoole/swoole:php8.4-alpine
 
-# Set working directory
-WORKDIR /var/www/html
-
 # Install system dependencies and development tools
 RUN apk add --no-cache \
     supervisor \
@@ -40,6 +37,9 @@ RUN apk add --no-cache \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Set working directory
+WORKDIR /var/www/html
+
 # Create directories
 RUN mkdir -p /var/log/supervisor \
     && chown -R www-data:www-data /var/www/html \
@@ -49,11 +49,9 @@ RUN mkdir -p /var/log/supervisor \
 COPY .devcontainer/supervisord.conf /etc/supervisord.conf
 COPY .devcontainer/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY .devcontainer/start-app.sh /usr/local/bin/start-app.sh
-COPY .devcontainer/healthcheck.sh /usr/local/bin/healthcheck.sh
 
 # Make scripts executable
-RUN chmod +x /usr/local/bin/start-app.sh \
-    && chmod +x /usr/local/bin/healthcheck.sh
+RUN chmod +x /usr/local/bin/start-app.sh
 
 # Copy application code
 COPY . .
@@ -70,14 +68,6 @@ RUN mkdir -p storage/app/public \
 
 # Configure git to trust the directory regardless of ownership
 RUN git config --global --add safe.directory /var/www/html
-
-# Install all PHP dependencies properly
-RUN rm -rf vendor \
-    && composer install \
-    && composer dump-autoload -o
-
-# Generate Laravel app key if not set
-RUN php artisan key:generate --ansi
 
 # Expose ports
 EXPOSE 8000 8080
