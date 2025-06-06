@@ -71,14 +71,11 @@ RUN mkdir -p storage/app/public \
 # Configure git to trust the directory regardless of ownership
 RUN git config --global --add safe.directory /var/www/html
 
-# Install PHP dependencies (only in production, dev will run in postCreateCommand)
-ARG ENVIRONMENT=development
+# Install all PHP dependencies properly
 RUN rm -rf vendor \
-    && if [ "$ENVIRONMENT" = "production" ]; then \
-    composer install --no-dev --optimize-autoloader; \
-    else \
-    composer install --no-scripts; \
-    fi
+    && COMPOSER_MEMORY_LIMIT=-1 composer install \
+    && composer dump-autoload -o \
+    && php artisan optimize:clear
 
 # Generate Laravel app key if not set
 RUN php artisan key:generate --ansi
