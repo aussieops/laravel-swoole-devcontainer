@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
     env_file:
       - ../.env
-      - ./.devcontainer/memory.conf
+      - ./memory.conf
     ports:
       - "8000:8000"  # Octane (for direct access)
       - "8080:8080"  # Reverb WebSockets
