@@ -74,8 +74,7 @@ RUN git config --global --add safe.directory /var/www/html
 # Install all PHP dependencies properly
 RUN rm -rf vendor \
     && COMPOSER_MEMORY_LIMIT=-1 composer install \
-    && composer dump-autoload -o \
-    && php artisan optimize:clear
+    && composer dump-autoload -o
 
 # Generate Laravel app key if not set
 RUN php artisan key:generate --ansi

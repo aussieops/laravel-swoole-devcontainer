@@ -28,13 +28,7 @@ echo "✅ Database service is up"
 # Run Laravel setup commands
 echo "🔧 Setting up Laravel application..."
 
-# Clear any existing caches
-php artisan config:clear || true
-php artisan cache:clear || true
-php artisan route:clear || true
-php artisan view:clear || true
-
-# Skip dependency installation as it's already done in Dockerfile
+# Skip cache clearing and dependency installation to reduce memory usage
 echo "📦 Using PHP dependencies installed during build..."
 
 # Generate application key if not exists
@@ -47,11 +41,8 @@ fi
 echo "🗄️  Running database migrations..."
 php artisan migrate --force
 
-# Cache configuration for better performance
-echo "⚡ Optimizing application..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+# Skip optimization commands to reduce memory usage
+echo "⚡ Skipping optimization to conserve memory..."
 
 # Create storage link if it doesn't exist
 if [ ! -L "public/storage" ]; then
