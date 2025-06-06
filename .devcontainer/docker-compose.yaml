@@ -32,21 +32,13 @@ services:
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
-    deploy:
-      resources:
-        limits:
-          memory: 8G
     depends_on:
       - postgres
       - redis
       - memcached
     networks:
       - laravel_network
-    healthcheck:
-      test: ["CMD", "/bin/bash", "/var/www/html/.devcontainer/healthcheck.sh"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+
 
   # PostgreSQL Database
   postgres:

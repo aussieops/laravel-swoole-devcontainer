@@ -31,15 +31,11 @@ echo "🔧 Setting up Laravel application..."
 # Skip cache clearing and dependency installation to reduce memory usage
 echo "📦 Using PHP dependencies installed during build..."
 
-# Generate application key if not exists
-if [ -z "$(php artisan key:generate --show)" ] || [ "$(php artisan key:generate --show)" = "base64:" ]; then
-    echo "🔑 Generating application key..."
-    php artisan key:generate --ansi
-fi
+# Skip key generation as it's already handled in the Dockerfile
+echo "🔑 Using application key generated during build..."
 
-# Run database migrations
-echo "🗄️  Running database migrations..."
-php artisan migrate --force
+# Skip automatic migrations to reduce memory usage and give developers control
+echo "⏭️  Skipping migrations - developers should run 'php artisan migrate' manually when needed"
 
 # Skip optimization commands to reduce memory usage
 echo "⚡ Skipping optimization to conserve memory..."

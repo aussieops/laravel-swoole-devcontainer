@@ -73,7 +73,7 @@ RUN git config --global --add safe.directory /var/www/html
 
 # Install all PHP dependencies properly
 RUN rm -rf vendor \
-    && COMPOSER_MEMORY_LIMIT=-1 composer install \
+    && composer install \
     && composer dump-autoload -o
 
 # Generate Laravel app key if not set
@@ -81,10 +81,6 @@ RUN php artisan key:generate --ansi
 
 # Expose ports
 EXPOSE 8000 8080
-
-# Add health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD /usr/local/bin/healthcheck.sh
 
 # Set entrypoint
 ENTRYPOINT ["/usr/local/bin/start-app.sh"]

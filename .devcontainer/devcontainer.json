@@ -11,17 +11,9 @@
             "extensions": [
                 // PHP Development
                 "bmewburn.vscode-intelephense-client",
-                "xdebug.php-debug",
                 "zobo.php-intellisense",
                 // Laravel Specific
-                "onecentlin.laravel-blade",
-                "onecentlin.laravel5-snippets",
-                "ryannaddy.laravel-artisan",
                 "codingyu.laravel-goto-view",
-                "amiralizadeh9480.laravel-extra-intellisense",
-                // Database
-                "mtxr.sqltools",
-                "mtxr.sqltools-driver-pg",
                 // Docker
                 "ms-azuretools.vscode-docker",
                 // General Development
@@ -40,9 +32,7 @@
                 "ms-vscode-remote.remote-containers",
                 // PHP formatting
                 "persoderlind.vscode-phpcbf",
-                "kokororin.vscode-phpfmt",
-                // Composer
-                "ikappas.composer"
+                "kokororin.vscode-phpfmt"
             ],
             "settings": {
                 // PHP Settings
@@ -56,18 +46,6 @@
                     "default": "resources/views",
                     "assets": "resources"
                 },
-                // Database Settings
-                "sqltools.connections": [
-                    {
-                        "name": "Laravel PostgreSQL",
-                        "driver": "PostgreSQL",
-                        "server": "postgres",
-                        "port": 5432,
-                        "database": "laravel",
-                        "username": "laravel",
-                        "password": "password"
-                    }
-                ],
                 // Editor Settings
                 "editor.formatOnSave": true,
                 "editor.codeActionsOnSave": {
@@ -134,14 +112,10 @@
     "postCreateCommand": [
         "bash",
         "-c",
-        "echo 'Setting up Laravel development environment...' && mkdir -p ~/.config/git && echo '[safe]\\ndirectory = /var/www/html' >> ~/.config/git/config && chmod +x /var/www/html/artisan.sh && chmod +x /var/www/html/setup-docker-aliases.sh && echo 'DevContainer setup complete! Run ./setup-docker-aliases.sh to configure shell aliases.'"
+        "echo 'Setting up Laravel development environment...' && mkdir -p ~/.config/git && echo '[safe]\\ndirectory = /var/www/html' >> ~/.config/git/config && echo 'DevContainer setup complete!'"
     ],
     // Commands to run every time the container starts
-    "postStartCommand": [
-        "bash",
-        "-c",
-        "echo 'Laravel DevContainer is ready!' && echo 'Access your application at: http://localhost' && echo 'Mailpit (Email testing): http://localhost:8025' && echo 'Meilisearch Admin: http://localhost:7700'"
-    ],
+    "postStartCommand": [],
     // Mount the Docker socket to allow Docker commands from within the container
     "mounts": [
         "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind,consistency=cached"
