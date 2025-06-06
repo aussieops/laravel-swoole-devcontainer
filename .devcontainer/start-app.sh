@@ -34,11 +34,8 @@ php artisan cache:clear || true
 php artisan route:clear || true
 php artisan view:clear || true
 
-# Install/update dependencies if composer.lock was modified
-if [ -f "composer.lock" ]; then
-    echo "📦 Installing PHP dependencies..."
-    composer install --no-interaction --optimize-autoloader
-fi
+# Skip dependency installation as it's already done in Dockerfile
+echo "📦 Using PHP dependencies installed during build..."
 
 # Generate application key if not exists
 if [ -z "$(php artisan key:generate --show)" ] || [ "$(php artisan key:generate --show)" = "base64:" ]; then
