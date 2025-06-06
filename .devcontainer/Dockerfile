@@ -68,9 +68,14 @@ RUN mkdir -p storage/app/public \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 storage bootstrap/cache
 
+# Configure git to trust the directory regardless of ownership
+RUN git config --global --add safe.directory /var/www/html
+
 # Install PHP dependencies (only in production, dev will run in postCreateCommand)
 ARG ENVIRONMENT=development
-RUN if [ "$ENVIRONMENT" = "production" ]; then \
+RUN rm -rf vendor \
+    && COMPOSER_MEMORY_LIMIT=-1 \
+    && if [ "$ENVIRONMENT" = "production" ]; then \
     composer install --no-dev --optimize-autoloader; \
     else \
     composer install --no-scripts; \
