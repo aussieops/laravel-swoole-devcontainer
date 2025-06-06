@@ -1,0 +1,170 @@
+{
+    "name": "Laravel with Swoole/Octane Development Environment",
+    "dockerComposeFile": "docker-compose.yaml",
+    "service": "app",
+    "workspaceFolder": "/var/www/html",
+    "shutdownAction": "stopCompose",
+    // Features are handled directly in the Dockerfile for Alpine compatibility
+    // Configure tool-specific properties
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // PHP Development
+                "bmewburn.vscode-intelephense-client",
+                "xdebug.php-debug",
+                "zobo.php-intellisense",
+                // Laravel Specific
+                "onecentlin.laravel-blade",
+                "onecentlin.laravel5-snippets",
+                "ryannaddy.laravel-artisan",
+                "codingyu.laravel-goto-view",
+                "amiralizadeh9480.laravel-extra-intellisense",
+                // Database
+                "mtxr.sqltools",
+                "mtxr.sqltools-driver-pg",
+                // Docker
+                "ms-azuretools.vscode-docker",
+                // General Development
+                "ms-vscode.vscode-json",
+                "bradlc.vscode-tailwindcss",
+                "esbenp.prettier-vscode",
+                "editorconfig.editorconfig",
+                "gruntfuggly.todo-tree",
+                "streetsidesoftware.code-spell-checker",
+                // Git
+                "eamodio.gitlens",
+                "mhutchie.git-graph",
+                // Testing
+                "m1guelpf.better-pest",
+                // DevContainer specific
+                "ms-vscode-remote.remote-containers",
+                // PHP formatting
+                "persoderlind.vscode-phpcbf",
+                "kokororin.vscode-phpfmt",
+                // Composer
+                "ikappas.composer"
+            ],
+            "settings": {
+                // PHP Settings
+                "php.suggest.basic": false,
+                "php.validate.enable": false,
+                "intelephense.files.maxSize": 5000000,
+                "intelephense.telemetry.enabled": false,
+                "intelephense.format.enable": true,
+                // Laravel Settings
+                "laravel_goto_view.folders": {
+                    "default": "resources/views",
+                    "assets": "resources"
+                },
+                // Database Settings
+                "sqltools.connections": [
+                    {
+                        "name": "Laravel PostgreSQL",
+                        "driver": "PostgreSQL",
+                        "server": "postgres",
+                        "port": 5432,
+                        "database": "laravel",
+                        "username": "laravel",
+                        "password": "password"
+                    }
+                ],
+                // Editor Settings
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.fixAll": "explicit"
+                },
+                "files.associations": {
+                    "*.blade.php": "blade"
+                },
+                "emmet.includeLanguages": {
+                    "blade": "html"
+                },
+                // Terminal Settings
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash",
+                        "args": []
+                    }
+                }
+            }
+        }
+    },
+    // Use 'forwardPorts' to make a list of ports inside the container available locally
+    "forwardPorts": [
+        80, // Nginx (Main Application)
+        5432, // PostgreSQL
+        6379, // Redis
+        7700, // Meilisearch
+        8000, // Laravel Octane (Direct Access)
+        8025, // Mailpit Web UI
+        8080, // Laravel Reverb WebSockets
+        11211 // Memcached
+    ],
+    // Configure port attributes
+    "portsAttributes": {
+        "80": {
+            "label": "Laravel Application (Nginx)",
+            "onAutoForward": "notify"
+        },
+        "5432": {
+            "label": "PostgreSQL Database"
+        },
+        "6379": {
+            "label": "Redis Cache"
+        },
+        "7700": {
+            "label": "Meilisearch Admin"
+        },
+        "8000": {
+            "label": "Laravel Octane (Direct)"
+        },
+        "8025": {
+            "label": "Mailpit (Email Testing)",
+            "onAutoForward": "notify"
+        },
+        "8080": {
+            "label": "Laravel Reverb (WebSockets)"
+        },
+        "11211": {
+            "label": "Memcached"
+        }
+    },
+    // Commands to run after the container is created
+    "postCreateCommand": [
+        "bash",
+        "-c",
+        "echo 'Setting up Laravel development environment...' && git config --global --add safe.directory /var/www/html && chmod +x /var/www/html/artisan.sh && chmod +x /var/www/html/setup-docker-aliases.sh && composer install && echo 'DevContainer setup complete! Run ./setup-docker-aliases.sh to configure shell aliases.'"
+    ],
+    // Commands to run every time the container starts
+    "postStartCommand": [
+        "bash",
+        "-c",
+        "echo 'Laravel DevContainer is ready!' && echo 'Access your application at: http://localhost' && echo 'Mailpit (Email testing): http://localhost:8025' && echo 'Meilisearch Admin: http://localhost:7700'"
+    ],
+    // Mount the Docker socket to allow Docker commands from within the container
+    "mounts": [
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind,consistency=cached"
+    ],
+    // Set environment variables
+    "containerEnv": {
+        "SHELL": "/bin/bash",
+        "DOCKER_BUILDKIT": "1",
+        "COMPOSE_DOCKER_CLI_BUILD": "1"
+    },
+    // Enable ptrace for debugging
+    "capAdd": [
+        "SYS_PTRACE"
+    ],
+    "securityOpt": [
+        "seccomp=unconfined"
+    ],
+    // Increase shared memory size for better performance
+    "init": true,
+    // Enable privileged mode for Docker socket access
+    "privileged": false,
+    // Wait for services to be ready
+    "waitFor": "postCreateCommand",
+    // Update the 'remoteUser' property if your container includes a non-root user
+    "remoteUser": "www-data"
+}
