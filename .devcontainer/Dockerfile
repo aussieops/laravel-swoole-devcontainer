@@ -16,7 +16,10 @@ RUN apk add --no-cache \
     icu-dev \
     oniguruma-dev \
     docker \
+    docker-cli \
     docker-compose \
+    docker-openrc \
+    dockerd \
     openssh-client \
     nano \
     vim \
@@ -49,6 +52,10 @@ RUN mkdir -p /var/log/supervisor \
 COPY .devcontainer/supervisord.conf /etc/supervisord.conf
 COPY .devcontainer/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY .devcontainer/start-app.sh /usr/local/bin/start-app.sh
+COPY .devcontainer/daemon.json /etc/docker/daemon.json
+
+# Create directory for Docker daemon
+RUN mkdir -p /etc/docker
 
 # Make scripts executable
 RUN chmod +x /usr/local/bin/start-app.sh

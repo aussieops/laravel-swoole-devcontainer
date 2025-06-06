@@ -115,7 +115,11 @@
         "echo 'Setting up Laravel development environment...' && mkdir -p ~/.config/git && echo '[safe]\\ndirectory = /var/www/html' >> ~/.config/git/config && echo 'DevContainer setup complete!'"
     ],
     // Commands to run every time the container starts
-    "postStartCommand": [],
+    "postStartCommand": [
+        "bash",
+        "-c",
+        "chmod +x /var/www/html/.devcontainer/start-docker.sh && /var/www/html/.devcontainer/start-docker.sh"
+    ],
     // Mount the Docker socket to allow Docker commands from within the container
     "mounts": [
         "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind,consistency=cached"
@@ -124,7 +128,9 @@
     "containerEnv": {
         "SHELL": "/bin/bash",
         "DOCKER_BUILDKIT": "1",
-        "COMPOSE_DOCKER_CLI_BUILD": "1"
+        "COMPOSE_DOCKER_CLI_BUILD": "1",
+        "COMPOSER_MEMORY_LIMIT": "-1",
+        "PHP_MEMORY_LIMIT": "-1"
     },
     // Enable ptrace for debugging
     "capAdd": [
@@ -135,8 +141,8 @@
     ],
     // Increase shared memory size for better performance
     "init": true,
-    // Enable privileged mode for Docker socket access
-    "privileged": false,
+    // Enable privileged mode for Docker-in-Docker
+    "privileged": true,
     // Wait for services to be ready
     "waitFor": "postCreateCommand",
     // Update the 'remoteUser' property if your container includes a non-root user

@@ -6,6 +6,30 @@
 # Change to application directory
 cd /var/www/html
 
+# Check if we're in a Docker-enabled environment (Coder)
+if [ -f "/.dockerenv" ]; then
+    echo "🐳 Docker-in-Docker environment detected - ensuring Docker daemon is running"
+    # Start Docker daemon in background if it's not running already
+    if ! pgrep dockerd > /dev/null; then
+        echo "Starting Docker daemon in background"
+        dockerd > /var/log/dockerd.log 2>&1 &
+        # Wait for Docker to start
+        echo "Waiting for Docker daemon to become available..."
+        timeout=10
+        counter=0
+        while ! docker info >/dev/null 2>&1; do
+            if [ "$counter" -gt "$timeout" ]; then
+                echo "WARNING: Docker daemon not ready, but continuing..."
+                break
+            fi
+            echo "Waiting for Docker daemon... ($counter/$timeout)"
+            counter=$((counter + 1))
+            sleep 1
+        done
+    fi
+    echo "🐳 Docker is available!"
+fi
+
 # Wait for database to be ready
 echo "⏳ Waiting for database connection..."
 max_tries=30
@@ -21,8 +45,14 @@ until php -r "try { new PDO('pgsql:host=postgres;dbname=${DB_DATABASE:-laravel}'
 done
 echo "✅ Database service is up"
 
-if [ ! -d "vendor" ]; then
-    composer install --no-interaction --no-progress --prefer-dist
+# Ensure Composer dependencies are installed and complete
+echo "📦 Checking Composer dependencies..."
+if [ ! -f "vendor/autoload.php" ] || [ ! -d "vendor/symfony/deprecation-contracts" ]; then
+    echo "📦 Installing or repairing Composer dependencies..."
+    # Set memory limit to -1 to avoid memory issues
+    COMPOSER_MEMORY_LIMIT=-1 composer install --no-interaction --no-progress --prefer-dist
+else
+    echo "✅ Composer dependencies look complete"
 fi
 
 # Generate key if not already set
@@ -37,11 +67,16 @@ if [ ! -L "public/storage" ]; then
     php artisan storage:link
 fi
 
-# Set proper permissions
+# Set proper permissions only on directories that need them
 echo "🔒 Setting file permissions..."
-chown -R www-data:www-data /var/www/html
-chmod -R 755 storage bootstrap/cache
-chmod -R 775 storage/logs
+# Skip .git directory to avoid permission errors
+find storage bootstrap/cache -type d -exec chmod 755 {} \;
+find storage/logs -type d -exec chmod 775 {} \;
+find storage -type f -exec chmod 644 {} \;
+touch storage/logs/laravel.log
+chmod 664 storage/logs/laravel.log
+
+echo "🔧 Ensuring write permissions on critical directories..."
 
 php artisan queue:restart
 
