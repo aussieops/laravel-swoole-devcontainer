@@ -65,12 +65,7 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": [
-                "laravel/pail",
-                "nunomaduro/collision",
-                "pestphp/pest-plugin-laravel",
-                "laravel/sail"
-            ]
+            "dont-discover": []
         }
     },
     "config": {
