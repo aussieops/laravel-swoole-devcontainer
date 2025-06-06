@@ -134,7 +134,7 @@
     "postCreateCommand": [
         "bash",
         "-c",
-        "echo 'Setting up Laravel development environment...' && git config --global --add safe.directory /var/www/html && chmod +x /var/www/html/artisan.sh && chmod +x /var/www/html/setup-docker-aliases.sh && composer install && echo 'DevContainer setup complete! Run ./setup-docker-aliases.sh to configure shell aliases.'"
+        "echo 'Setting up Laravel development environment...' && git config --global --add safe.directory /var/www/html && chmod +x /var/www/html/artisan.sh && chmod +x /var/www/html/setup-docker-aliases.sh && composer install --no-dev && echo 'DevContainer setup complete! Run ./setup-docker-aliases.sh to configure shell aliases.'"
     ],
     // Commands to run every time the container starts
     "postStartCommand": [
