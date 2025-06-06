@@ -32,6 +32,10 @@ services:
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
+    deploy:
+      resources:
+        limits:
+          memory: 8G
     depends_on:
       - postgres
       - redis
