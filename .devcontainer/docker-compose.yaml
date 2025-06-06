@@ -23,6 +23,7 @@ services:
     restart: unless-stopped
     env_file:
       - ../.env
+      - ./.devcontainer/memory.conf
     ports:
       - "8000:8000"  # Octane (for direct access)
       - "8080:8080"  # Reverb WebSockets
@@ -32,6 +33,11 @@ services:
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
+      - COMPOSER_MEMORY_LIMIT=-1
+    deploy:
+      resources:
+        limits:
+          memory: 4G
     depends_on:
       - postgres
       - redis
