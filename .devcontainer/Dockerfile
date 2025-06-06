@@ -74,7 +74,6 @@ RUN git config --global --add safe.directory /var/www/html
 # Install PHP dependencies (only in production, dev will run in postCreateCommand)
 ARG ENVIRONMENT=development
 RUN rm -rf vendor \
-    && COMPOSER_MEMORY_LIMIT=-1 \
     && if [ "$ENVIRONMENT" = "production" ]; then \
     composer install --no-dev --optimize-autoloader; \
     else \

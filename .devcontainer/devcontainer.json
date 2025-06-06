@@ -134,13 +134,13 @@
     "postCreateCommand": [
         "bash",
         "-c",
-        "echo 'Setting up Laravel development environment...' && mkdir -p ~/.config/git && echo '[safe]\\ndirectory = /var/www/html' >> ~/.config/git/config && chmod +x /var/www/html/artisan.sh && chmod +x /var/www/html/setup-docker-aliases.sh && export COMPOSER_MEMORY_LIMIT=-1 && /usr/local/bin/composer install --no-dev --prefer-dist --no-progress --no-scripts --optimize-autoloader && echo 'DevContainer setup complete! Run ./setup-docker-aliases.sh to configure shell aliases.'"
+        "echo 'Setting up Laravel development environment...' && mkdir -p ~/.config/git && echo '[safe]\\ndirectory = /var/www/html' >> ~/.config/git/config && chmod +x /var/www/html/artisan.sh && chmod +x /var/www/html/setup-docker-aliases.sh && /usr/local/bin/composer install --no-dev && echo 'DevContainer setup complete! Run ./setup-docker-aliases.sh to configure shell aliases.'"
     ],
     // Commands to run every time the container starts
     "postStartCommand": [
         "bash",
         "-c",
-        "echo 'Laravel DevContainer is ready!' && if [ ! -d vendor/pestphp ]; then echo 'Installing dev dependencies...' && export COMPOSER_MEMORY_LIMIT=-1 && /usr/local/bin/composer install --prefer-dist --no-progress --no-interaction; fi && echo 'Access your application at: http://localhost' && echo 'Mailpit (Email testing): http://localhost:8025' && echo 'Meilisearch Admin: http://localhost:7700'"
+        "echo 'Laravel DevContainer is ready!' && if [ ! -d vendor/pestphp ]; then echo 'Installing dev dependencies...' && /usr/local/bin/composer install; fi && echo 'Access your application at: http://localhost' && echo 'Mailpit (Email testing): http://localhost:8025' && echo 'Meilisearch Admin: http://localhost:7700'"
     ],
     // Mount the Docker socket to allow Docker commands from within the container
     "mounts": [
